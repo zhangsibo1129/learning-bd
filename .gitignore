@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+data/generated/
+.ipynb_checkpoints/
+*.executed.ipynb
+.env
+.DS_Store
+.trae-html-share-packages/
