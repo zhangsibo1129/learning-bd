@@ -101,6 +101,35 @@ services:
         done
     restart: unless-stopped
 
+  # 阶段 3 起使用：以 SQL 批作业方式消费 Kafka 并写入 Iceberg
+  flink-sql:
+    build: ./flink
+    image: ontology-flink:1.20
+    container_name: ontology-flink-sql
+    profiles: ["phase3"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rustfs:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Shanghai
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: rustfsadmin
+      AWS_SECRET_ACCESS_KEY: rustfsadmin
+    volumes:
+      - ./flink/sql:/opt/flink/sql:ro
+    command:
+      [
+        "/opt/flink/bin/sql-client.sh",
+        "embedded",
+        "-Dexecution.target=local",
+        "-f",
+        "/opt/flink/sql/phase3_ingest.sql",
+      ]
+
 volumes:
   postgres_data:
     name: ontology_postgres_data
