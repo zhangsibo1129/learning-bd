@@ -1,0 +1,14 @@
+model
+  schema 1.1
+
+type user
+
+type group
+  relations
+    define member: [user]
+
+type document
+  relations
+    define editor: [group#member]
+    define owner: [user]
+    define can_edit: editor or owner
