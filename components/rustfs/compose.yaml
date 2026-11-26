@@ -1,0 +1,43 @@
+name: rustfs-lab
+
+services:
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: rustfs-lab
+    ports:
+      # 宿主机用 19000/19001，避免与其他 RustFS 实例冲突
+      - "19000:9000"   # S3 API
+      - "19001:9001"   # Console
+    environment:
+      RUSTFS_ACCESS_KEY: rustfsadmin
+      RUSTFS_SECRET_KEY: rustfsadmin
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: 0.0.0.0:9000
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: 0.0.0.0:9001
+      TZ: Asia/Shanghai
+    volumes:
+      - rustfs_lab_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/health >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  # S3 客户端：minio 镜像自带 mc，不需要额外拉取
+  mc:
+    image: minio/minio:latest
+    container_name: rustfs-mc
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    depends_on:
+      rustfs:
+        condition: service_healthy
+    volumes:
+      - mc_config:/root/.mc
+
+volumes:
+  rustfs_lab_data:
+    name: rustfs_lab_data
+  mc_config:
+    name: rustfs_lab_mc_config
