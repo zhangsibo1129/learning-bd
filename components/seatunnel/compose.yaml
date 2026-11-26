@@ -1,0 +1,14 @@
+name: seatunnel-lab
+
+services:
+  seatunnel:
+    image: apache/seatunnel:2.3.9
+    container_name: seatunnel-lab
+    entrypoint: ["/bin/sh", "-c", "sleep infinity"]
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./jobs:/opt/seatunnel/jobs:ro
+      - ./data:/data
+
+volumes: {}
