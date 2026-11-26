@@ -1,0 +1,18 @@
+name: iceberg-lab
+
+services:
+  sql:
+    build:
+      context: ../..
+      dockerfile: components/iceberg/Dockerfile
+    image: iceberg-lab:1.20
+    container_name: iceberg-sql
+    # 只作为 SQL 客户端容器常驻，命令通过 scripts/sql.sh 执行
+    command: ["sleep", "infinity"]
+    volumes:
+      - ./sql:/opt/flink/sql:ro
+      - warehouse:/warehouse
+
+volumes:
+  warehouse:
+    name: iceberg_lab_warehouse

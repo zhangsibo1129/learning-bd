@@ -15,6 +15,8 @@ urls=(
   # Iceberg JDBC Catalog 初始化依赖 Hadoop Configuration
   "$MIRROR/org/apache/hadoop/hadoop-client-api/3.3.6/hadoop-client-api-3.3.6.jar"
   "$MIRROR/org/apache/hadoop/hadoop-client-runtime/3.3.6/hadoop-client-runtime-3.3.6.jar"
+  # Hadoop 客户端运行期依赖
+  "$MIRROR/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"
 )
 
 for url in "${urls[@]}"; do
