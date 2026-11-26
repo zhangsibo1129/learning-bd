@@ -1,0 +1,3 @@
+savepoints/*
+!savepoints/.gitkeep
+sql/local/

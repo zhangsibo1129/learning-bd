@@ -1,0 +1,37 @@
+name: flink-lab
+
+services:
+  jobmanager:
+    image: flink:1.20
+    container_name: flink-jm
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        jobmanager.memory.process.size: 1600m
+        rest.address: localhost
+        rest.bind-address: 0.0.0.0
+    volumes:
+      - ./sql:/opt/flink/sql:ro
+      - ./savepoints:/opt/flink/savepoints
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/8081' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+
+  taskmanager:
+    image: flink:1.20
+    command: taskmanager
+    depends_on:
+      - jobmanager
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        taskmanager.memory.process.size: 2048m
+    volumes:
+      - ./savepoints:/opt/flink/savepoints
